@@ -31,6 +31,9 @@ public class Repository <T>{
 		data.addAll(newData);
 	}
 	
+	public List<T> getData() {
+		return data;
+	}
 	/**
 	 * Checks if the repository is empty.
 	 * @return true, if the repository is empty

@@ -47,6 +47,7 @@ public class DailyWeather {
 		this.dayOfTheMonth = dayOfTheMonth;
 		this.minTempInF = minTemp;
 		this.maxTempInF = maxTemp;
+		calculateTempDiffInF();
 	}
 
 	public int getDayOfTheMonth() {
@@ -90,8 +91,8 @@ public class DailyWeather {
 
 	@Override
 	public String toString() {
-		return "DailyWeather [dayOfTheMonth=" + dayOfTheMonth + ", minTempInFahrenheit=" + minTempInF
-				+ ", maxTempInFahrenheit=" + maxTempInF + ", tempDiffInFahrenheit=" + tempDiffInF
+		return "DailyWeather [dayOfTheMonth=" + dayOfTheMonth + ", minTempInF=" + minTempInF
+				+ ", maxTempInF=" + maxTempInF + ", tempDiffInF=" + tempDiffInF
 				+ "]";
 	}
 
