@@ -24,14 +24,13 @@ public class CsvToObjectMapperTest {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		mapper = new CsvToObjectMapper<>();  
+		mapper = new CsvToObjectMapper<>(MockBean.class);  
 		
 		correctBeanList = new ArrayList<MockBean>();
 		correctBeanList.add(new MockBean("January", 1, 59.1f));
 		correctBeanList.add(new MockBean("February", 2, 63.5f));
 		correctBeanList.add(new MockBean("January", 3, 55.0f));
-		correctBeanList.add(new MockBean("January", 4, 59f));
-		
+		correctBeanList.add(new MockBean("January", 4, 59f));	
 	}
 
 	
@@ -122,7 +121,7 @@ public class CsvToObjectMapperTest {
 	@Test
 	//entry with wrong separators gets skipped (CsvRequiredFieldEmptyException or CsvDataTypeMismatchException gets logged)
 	void entryContainsWrongSeparators() throws FileNotFoundException, IllegalArgumentException, InvalidFileFormatException {
-		correctBeanList.remove(1);
+		correctBeanList.remove(0);
 		List<MockBean> result = mapper.mapFileToObjectList(Path.of(FILE_PATH + "weather_entryWithWrongSeparator.csv"));
 		assertEquals(result, correctBeanList);
 	}
