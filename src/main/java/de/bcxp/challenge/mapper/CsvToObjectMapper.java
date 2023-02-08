@@ -202,7 +202,7 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	
 	//TO DO: Log to logger
 	private void logCapturedExceptions(CsvToBean<T> beans, Path filePath) {
-		System.err.println("Captured Exceptions from class" + THIS_CLASS_NAME + " while parsing " + filePath.toString() + ":" );
+		System.err.println("Captured Exceptions from " + THIS_CLASS_NAME + " while parsing " + filePath.toString() + ":" );
 		System.err.println("The listed row(s) will not be mapped to objects.");
 		beans.getCapturedExceptions().forEach(e -> {
 			System.err.println(e.getLineNumber() + ":" + e);

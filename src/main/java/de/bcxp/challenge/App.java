@@ -8,6 +8,7 @@ import de.bcxp.challenge.mapper.CsvToObjectMapper;
 import de.bcxp.challenge.model.Country;
 import de.bcxp.challenge.model.DailyWeather;
 import de.bcxp.challenge.repository.Repository;
+import de.bcxp.challenge.service.CountryService;
 import de.bcxp.challenge.service.DailyWeatherService;
 import de.bcxp.challengeExceptions.InvalidFileFormatException;
 
@@ -41,17 +42,14 @@ public final class App {
 
         Repository<Country> countryRepo = new Repository();
     	CsvToObjectMapper<Country> countryMapper = new CsvToObjectMapper<>(Country.class, ';');
+    	CountryService countryService = new CountryService(countryRepo, countryMapper);
     	try {
-			List<Country> list = countryMapper.mapFileToObjectList(COUNTRY_FILE_PATH);
-	    	System.out.println(list);
+			countryService.addDataFromCsvFile(COUNTRY_FILE_PATH, ';');
 		} catch (FileNotFoundException | InvalidFileFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-        
-        
-        String countryWithHighestPopulationDensity = "Some country"; // Your population density analysis function call …
+    	
+        String countryWithHighestPopulationDensity = countryService.getCountryNameWithHighestPopulationDensity(); // Your population density analysis function call …
         System.out.printf("Country with highest population density: %s%n", countryWithHighestPopulationDensity);
     }
 }

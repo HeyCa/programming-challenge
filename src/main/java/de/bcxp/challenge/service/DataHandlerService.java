@@ -78,8 +78,8 @@ public abstract class DataHandlerService <T>{
 				
 		List<T> sortedList = sortAndFilterData(comparator, filter);
 		
-		System.out.println("Sorted List: ");
-		sortedList.stream().forEach(d -> System.out.println(d));
+		//System.out.println("Sorted List: ");
+		//sortedList.stream().forEach(d -> System.out.println(d));
 		
 		
 		return sortedList.isEmpty() ? null : sortedList.get(0);
@@ -93,11 +93,29 @@ public abstract class DataHandlerService <T>{
 	 * @return the object with the highest value. Null if no such object exists (if the repository is empty or if all objects have been filtered out)
 	 */
 	protected T getObjectByHighestValue(Comparator<T> comparator, Predicate<T> filter) {
-		//TO DO
-		return null;
+		if(comparator == null) {
+			throw new IllegalArgumentException("Comparator cannot be null.");
+		}
+		
+		if(repo.isEmpty()) {
+			return null;
+		}
+				
+		List<T> sortedList = sortAndFilterData(comparator, filter);
+		int size = sortedList.size();
+		
+		//System.out.println("Sorted List: ");
+		//sortedList.stream().forEach(d -> System.out.println(d));
+		
+		
+		return sortedList.isEmpty() ? null : sortedList.get(size-1);
 	}
 	
 	private List<T> sortAndFilterData(Comparator<T> comparator, Predicate<T> filter){
+		if(filter == null) {
+			filter = (x) -> (true);
+		}
+		
 		return repo.getData().stream()
 				.sorted(comparator)
 				.filter(filter)

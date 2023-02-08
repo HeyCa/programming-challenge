@@ -8,6 +8,11 @@ import de.bcxp.challenge.mapper.CsvToObjectMapper;
 import de.bcxp.challenge.model.DailyWeather;
 import de.bcxp.challenge.repository.Repository;
 
+/**
+ * This service class provides methods to retrieve DailyWeather data.
+ * @author catherine heyart
+ *
+ */
 public class DailyWeatherService extends DataHandlerService <DailyWeather>{
 	
 	private DailyWeather defaultObject;
