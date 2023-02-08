@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.bcxp.challenge.mapper.CsvToObjectMapper;
 import de.bcxp.challenge.model.DailyWeather;
 import de.bcxp.challenge.repository.Repository;
 
@@ -22,7 +23,8 @@ class DailyWeatherServiceTest {
 	@BeforeEach
 	void setUp() {
 		mockRepo = Mockito.mock(Repository.class);
-		weatherService = new DailyWeatherService(mockRepo);
+		CsvToObjectMapper<DailyWeather> mockMapper = Mockito.mock(CsvToObjectMapper.class);
+		weatherService = new DailyWeatherService(mockRepo, mockMapper);
 		
 		data = new ArrayList<>();
 		data.add(new DailyWeather(1, 59, 88));

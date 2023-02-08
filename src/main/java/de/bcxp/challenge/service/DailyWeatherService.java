@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
+import de.bcxp.challenge.mapper.CsvToObjectMapper;
 import de.bcxp.challenge.model.DailyWeather;
 import de.bcxp.challenge.repository.Repository;
 
@@ -11,8 +12,8 @@ public class DailyWeatherService extends DataHandlerService <DailyWeather>{
 	
 	private DailyWeather defaultObject;
 	
-	public DailyWeatherService(Repository<DailyWeather> repository) {
-		super(repository);
+	public DailyWeatherService(Repository<DailyWeather> repository, CsvToObjectMapper<DailyWeather> csvMapper) {
+		super(repository, csvMapper);
 		defaultObject = new DailyWeather();
 	}
 	
@@ -21,7 +22,7 @@ public class DailyWeatherService extends DataHandlerService <DailyWeather>{
 	 * Returns day number of the day with the smallest temperature spread. 
 	 * @return day number of the day with the smallest temperature spread. -1 if no such day exists (because repository is empty or because no valid temperature data is present)
 	 */
-	public int getDayWithSmallestTemperatureSpread() {
+	public int getDayWithSmallestTempSpread() {
 		//Compares the temperature spread of two objects
 		Comparator<DailyWeather> comparator = (w1, w2) -> w1.getTempDiffInF() - w2.getTempDiffInF();
 		//Filters out all instances where the temperature spread value has the default value
