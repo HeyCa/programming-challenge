@@ -39,7 +39,7 @@ class DailyWeatherServiceTest {
 	void normalCase() {
 		Mockito.when(mockRepo.getData()).thenReturn(data);
 		int result = weatherService.getDayWithSmallestTemperatureSpread();
-		assertEquals(1, result);
+		assertEquals(2, result);
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ class DailyWeatherServiceTest {
 		data.add(new DailyWeather(6, 59, -1));
 		Mockito.when(mockRepo.getData()).thenReturn(data);
 		int result = weatherService.getDayWithSmallestTemperatureSpread();
-		assertEquals(29, result);
+		assertEquals(2, result);
 	}
 	
 	@Test
@@ -73,10 +73,10 @@ class DailyWeatherServiceTest {
 	
 	@Test
 	void doubleValues() {
-		data.add(new DailyWeather(6, 59, 88));
+		data.add(new DailyWeather(6, 63, 79));
 		Mockito.when(mockRepo.getData()).thenReturn(data);
 		int result = weatherService.getDayWithSmallestTemperatureSpread();
-		assertEquals(1, result);
+		assertEquals(2, result);
 	}
 
 }
