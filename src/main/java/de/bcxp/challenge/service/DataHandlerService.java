@@ -104,8 +104,8 @@ public abstract class DataHandlerService <T>{
 		List<T> sortedList = sortAndFilterData(comparator, filter);
 		int size = sortedList.size();
 		
-		//System.out.println("Sorted List: ");
-		//sortedList.stream().forEach(d -> System.out.println(d));
+		System.out.println("Sorted List: ");
+		sortedList.stream().forEach(d -> System.out.println(d));
 		
 		
 		return sortedList.isEmpty() ? null : sortedList.get(size-1);

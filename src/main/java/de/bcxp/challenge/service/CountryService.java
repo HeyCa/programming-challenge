@@ -32,7 +32,7 @@ public class CountryService extends DataHandlerService<Country>{
 		//Filters out all instances where the population density is the default value
 		Predicate<Country> filter = c -> (c.getPopulationDensity() != defaultObject.getPopulationDensity());
 		
-		Country result = getObjectByHighestValue(comparator, null); 
+		Country result = getObjectByHighestValue(comparator, filter); 
 	
 		return result == null ? "" : result.getName();
 	}

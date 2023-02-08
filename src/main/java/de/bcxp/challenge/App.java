@@ -2,7 +2,6 @@ package de.bcxp.challenge;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.util.List;
 
 import de.bcxp.challenge.mapper.CsvToObjectMapper;
 import de.bcxp.challenge.model.Country;
@@ -40,6 +39,8 @@ public final class App {
         int dayWithSmallestTempSpread = weatherService.getDayWithSmallestTempSpread();     // Your day analysis function call …
         System.out.printf("Day with smallest temperature spread: %d%n", dayWithSmallestTempSpread);
 
+        
+        //COUNTRY
         Repository<Country> countryRepo = new Repository();
     	CsvToObjectMapper<Country> countryMapper = new CsvToObjectMapper<>(Country.class, ';');
     	CountryService countryService = new CountryService(countryRepo, countryMapper);
@@ -48,7 +49,6 @@ public final class App {
 		} catch (FileNotFoundException | InvalidFileFormatException e) {
 			e.printStackTrace();
 		}
-    	
         String countryWithHighestPopulationDensity = countryService.getCountryNameWithHighestPopulationDensity(); // Your population density analysis function call …
         System.out.printf("Country with highest population density: %s%n", countryWithHighestPopulationDensity);
     }
