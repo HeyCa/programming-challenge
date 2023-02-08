@@ -2,6 +2,8 @@ package de.bcxp.challenge.model;
 
 import java.util.Objects;
 
+import com.opencsv.bean.CsvBindByName;
+
 /**
  * DailyWeather model follows JavaBeans conventions, and defines fields and methods to save daily weather data.
  * @author catherine heyart
@@ -9,27 +11,42 @@ import java.util.Objects;
  */
 public class DailyWeather {
 	
+	/**
+	 * Day of the month.
+	 */
+	@CsvBindByName(column = "Day")
 	private int dayOfTheMonth;
 	
-	private int minTempInFahrenheit;
+	/**
+	 * Minimum temperature measured on this day (in Fahrenheit):
+	 */
+	@CsvBindByName(column = "MnT")
+	private int minTempInF;
 	
-	private int maxTempInFahrenheit;
+	/**
+	 * Maximum temperature measured on this day (in Fahrenheit):
+	 */
+	@CsvBindByName(column = "MxT")
+	private int maxTempInF;
 	
-	private int tempDiffInFahrenheit;
+	/**
+	 * Temperature difference on this day (in Fahrenheit):
+	 */
+	private int tempDiffInF;
 	
 	private final static int DEFAULT_VALUE = -1;
 	
 	public DailyWeather() {
 		dayOfTheMonth = DEFAULT_VALUE;
-		minTempInFahrenheit = DEFAULT_VALUE;
-		maxTempInFahrenheit = DEFAULT_VALUE;
-		tempDiffInFahrenheit = DEFAULT_VALUE;
+		minTempInF = DEFAULT_VALUE;
+		maxTempInF = DEFAULT_VALUE;
+		tempDiffInF = DEFAULT_VALUE;
 	}
 
 	public DailyWeather(int dayOfTheMonth, int minTemp, int maxTemp) {
 		this.dayOfTheMonth = dayOfTheMonth;
-		this.minTempInFahrenheit = minTemp;
-		this.maxTempInFahrenheit = maxTemp;
+		this.minTempInF = minTemp;
+		this.maxTempInF = maxTemp;
 	}
 
 	public int getDayOfTheMonth() {
@@ -40,47 +57,47 @@ public class DailyWeather {
 		this.dayOfTheMonth = dayOfTheMonth;
 	}
 
-	public int getMinTempInFahrenheit() {
-		return minTempInFahrenheit;
+	public int getMinTempInF() {
+		return minTempInF;
 	}
 
-	public void setMinTempInFahrenheit(int minTempInFahrenheit) {		
-		this.minTempInFahrenheit = minTempInFahrenheit;
-		calculateTempDiffInFahrenheit();
+	public void setMinTempInF(int minTempInFahrenheit) {		
+		this.minTempInF = minTempInFahrenheit;
+		calculateTempDiffInF();
 	}
 
-	public int getMaxTempInFahrenheit() {
-		return maxTempInFahrenheit;
+	public int getMaxTempInF() {
+		return maxTempInF;
 	}
 
-	public void setMaxTempInFahrenheit(int maxTempInFahrenheit) {
-		this.maxTempInFahrenheit = maxTempInFahrenheit;
-		calculateTempDiffInFahrenheit();
+	public void setMaxTempInF(int maxTempInFahrenheit) {
+		this.maxTempInF = maxTempInFahrenheit;
+		calculateTempDiffInF();
 	}
 	
-	public int getTempDiffInFahrenheit() {
-		return tempDiffInFahrenheit;
+	public int getTempDiffInF() {
+		return tempDiffInF;
 	}
 
-	private void calculateTempDiffInFahrenheit() {
-		if(minTempInFahrenheit == DEFAULT_VALUE || maxTempInFahrenheit == DEFAULT_VALUE) {
-			tempDiffInFahrenheit = DEFAULT_VALUE;
+	private void calculateTempDiffInF() {
+		if(minTempInF == DEFAULT_VALUE || maxTempInF == DEFAULT_VALUE) {
+			tempDiffInF = DEFAULT_VALUE;
 			return;
 		} 
 		
-		tempDiffInFahrenheit = maxTempInFahrenheit - minTempInFahrenheit;
+		tempDiffInF = maxTempInF - minTempInF;
 	}
 
 	@Override
 	public String toString() {
-		return "DailyWeather [dayOfTheMonth=" + dayOfTheMonth + ", minTempInFahrenheit=" + minTempInFahrenheit
-				+ ", maxTempInFahrenheit=" + maxTempInFahrenheit + ", tempDiffInFahrenheit=" + tempDiffInFahrenheit
+		return "DailyWeather [dayOfTheMonth=" + dayOfTheMonth + ", minTempInFahrenheit=" + minTempInF
+				+ ", maxTempInFahrenheit=" + maxTempInF + ", tempDiffInFahrenheit=" + tempDiffInF
 				+ "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dayOfTheMonth, maxTempInFahrenheit, minTempInFahrenheit, tempDiffInFahrenheit);
+		return Objects.hash(dayOfTheMonth, maxTempInF, minTempInF, tempDiffInF);
 	}
 
 	@Override
@@ -92,9 +109,9 @@ public class DailyWeather {
 		if (getClass() != obj.getClass())
 			return false;
 		DailyWeather other = (DailyWeather) obj;
-		return dayOfTheMonth == other.dayOfTheMonth && maxTempInFahrenheit == other.maxTempInFahrenheit
-				&& minTempInFahrenheit == other.minTempInFahrenheit
-				&& tempDiffInFahrenheit == other.tempDiffInFahrenheit;
+		return dayOfTheMonth == other.dayOfTheMonth && maxTempInF == other.maxTempInF
+				&& minTempInF == other.minTempInF
+				&& tempDiffInF == other.tempDiffInF;
 	}
 	
 	
