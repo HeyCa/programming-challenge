@@ -41,6 +41,8 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	 */
 	private HashSet<String> beanFields;
 	
+	private final String THIS_CLASS_NAME =  this.getClass().getName();
+	
 	
 	public CsvToObjectMapper(Class<T> clazz){
 		separator = ',';
@@ -80,7 +82,9 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		}
 		
 		if(!headerIsValid(filePath)) {
-			throw new InvalidFileFormatException("The header is not valid. The header needs to have at least one column which matches a field of the bean to be mapped. It also needs to contain the same separator as the one defined in this class.");
+			throw new InvalidFileFormatException("The header is not valid. \n"
+					+ "The header needs to have at least one column which matches a field of the bean to be mapped. \n"
+					+ "It also needs to contain the same separator as the one defined in the class " + THIS_CLASS_NAME);
 		}
 		
 		List<T> list = null; 
@@ -198,7 +202,8 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	
 	//TO DO: Log to logger
 	private void logCapturedExceptions(CsvToBean<T> beans, Path filePath) {
-		System.out.println("Captured Exceptions for " + filePath.toString() + ":" );
+		System.err.println("Captured Exceptions from class" + THIS_CLASS_NAME + " while parsing " + filePath.toString() + ":" );
+		System.err.println("The listed row(s) will not be mapped to objects.");
 		beans.getCapturedExceptions().forEach(e -> {
 			System.err.println(e.getLineNumber() + ":" + e);
 		 	//TO DO: add to logger

@@ -40,14 +40,14 @@ class DailyWeatherServiceTest {
 	//full repository with valied tempDiff
 	void normalCase() {
 		Mockito.when(mockRepo.getData()).thenReturn(data);
-		int result = weatherService.getDayWithSmallestTemperatureSpread();
+		int result = weatherService.getDayWithSmallestTempSpread();
 		assertEquals(2, result);
 	}
 	
 	@Test
 	void emptyRepository() {
 		Mockito.when(mockRepo.getData()).thenReturn(new ArrayList<DailyWeather>());
-		int result = weatherService.getDayWithSmallestTemperatureSpread();
+		int result = weatherService.getDayWithSmallestTempSpread();
 		assertEquals(-1, result);
 	}
 	
@@ -55,7 +55,7 @@ class DailyWeatherServiceTest {
 	void nonValiedEntryPresent() {
 		data.add(new DailyWeather(6, 59, -1));
 		Mockito.when(mockRepo.getData()).thenReturn(data);
-		int result = weatherService.getDayWithSmallestTemperatureSpread();
+		int result = weatherService.getDayWithSmallestTempSpread();
 		assertEquals(2, result);
 	}
 	
@@ -69,7 +69,7 @@ class DailyWeatherServiceTest {
 		nonValiedData.add(new DailyWeather(5, 66, -1));
 		
 		Mockito.when(mockRepo.getData()).thenReturn(nonValiedData);
-		int result = weatherService.getDayWithSmallestTemperatureSpread();
+		int result = weatherService.getDayWithSmallestTempSpread();
 		assertEquals(-1, result);
 	}
 	
@@ -77,7 +77,7 @@ class DailyWeatherServiceTest {
 	void doubleValues() {
 		data.add(new DailyWeather(6, 63, 79));
 		Mockito.when(mockRepo.getData()).thenReturn(data);
-		int result = weatherService.getDayWithSmallestTemperatureSpread();
+		int result = weatherService.getDayWithSmallestTempSpread();
 		assertEquals(2, result);
 	}
 
