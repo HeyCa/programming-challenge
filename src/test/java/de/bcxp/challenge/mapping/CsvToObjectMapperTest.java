@@ -35,13 +35,13 @@ public class CsvToObjectMapperTest {
 
 	
 	@Test
-	void normalCase() throws FileNotFoundException, IllegalArgumentException, InvalidFileFormatException{
+	void normalCase() throws FileNotFoundException, InvalidFileFormatException{
 		List<MockBean> result = mapper.mapFileToObjectList(Path.of(FILE_PATH + "weather_normalCase.csv"));
 		assertEquals(result, correctBeanList);
 	}
 	
 	@Test
-	void emptyFile() throws FileNotFoundException, IllegalArgumentException, InvalidFileFormatException {
+	void emptyFile() throws FileNotFoundException, InvalidFileFormatException {
 		assertThrows(InvalidFileFormatException.class, () -> {
 			mapper.mapFileToObjectList(Path.of(FILE_PATH + "empty.csv"));
 	    });

@@ -1,15 +1,27 @@
 package de.bcxp.challenge.mapper;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.exceptions.CsvValidationException;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
+import de.bcxp.challenge.util.FileTypeChecker;
 import de.bcxp.challengeExceptions.InvalidFileFormatException;
 
 public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
@@ -24,14 +36,22 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	 */
 	private char separator;
 	
+	/**
+	 * hashSet containing all the fields of T that will be mapped  
+	 */
+	private HashSet<String> beanFields;
+	
+	
 	public CsvToObjectMapper(Class<T> clazz){
 		separator = ',';
 		this.clazz = clazz;
+		beanFields = retrieveBeanFields();
 	}
 	
 	public CsvToObjectMapper(Class<T> clazz, char separator) {
 		this.separator = separator;
 		this.clazz = clazz;
+		beanFields = retrieveBeanFields();
 	}
 	
 	public char getSeparator() {
@@ -49,18 +69,19 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	 * If none of the rows are valid, an empty list will be returned. 
 	 */
 	@Override
-	public List<T> mapFileToObjectList(Path filePath) throws FileNotFoundException, IllegalArgumentException, InvalidFileFormatException {
+	public List<T> mapFileToObjectList(Path filePath) throws FileNotFoundException, InvalidFileFormatException {
 		
 		if(filePath == null) {
 			throw new IllegalArgumentException("The file path cannot be null.");
 		}
 		
-		//TO DO: Check if file is right format -> InvlaidFileFormatException
+		if(!FileTypeChecker.isCsvFile(filePath)) {
+			throw new InvalidFileFormatException("The file must be a .csv file");
+		}
 		
-		//TO DO: Check if file is empty -> InvalidFileFormatException
-		
-		//TO DO: Check if header is valid -> InvalidFileFormatException
-		
+		if(!headerIsValid(filePath)) {
+			throw new InvalidFileFormatException("The header is not valid. The header needs to have at least one column which matches a field of the bean to be mapped. It also needs to contain the same separator as the one defined in this class.");
+		}
 		
 		List<T> list = null; 
 		try {
@@ -85,6 +106,96 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		return list;
 	}
 	
+	
+	
+	///////////HELPER METHODS//////////////////////////////////////////////////
+	
+	private boolean headerIsValid(Path filePath) throws FileNotFoundException{
+		String header = readFirstLineOfFile(filePath);
+		
+		if(header == null || header.isBlank()) {
+			return false;
+		}
+		
+		String[] columns = header.split("" + separator);
+		
+		for(String c : columns){
+        	if(beanFields.contains(c.toUpperCase())) {
+        		return true;
+        	}
+        }
+		return false;
+	}
+	
+	//TO DO: outsource to util class (?)
+	private String readFirstLineOfFile(Path filePath) throws FileNotFoundException {
+		String result = null;
+	    try (BufferedReader reader = Files.newBufferedReader(filePath)) {
+	            result = reader.readLine();
+	    } catch (IOException e) {
+	    	if(e instanceof FileNotFoundException || e instanceof NoSuchFileException) {
+	    		throw new FileNotFoundException("The file could not be found");
+	    	} 
+			e.printStackTrace();
+		}
+	    return result;	
+	}
+	
+	/**
+	 * 
+	 * @return Hashset containing all the bean fields that will be mapped 
+	 */
+	private HashSet<String> retrieveBeanFields(){
+		String fieldString = getFieldsAsString();
+		HashSet<String> hashSet = new HashSet<>();
+		
+		String[] fields = fieldString.split("" + separator);
+		for(String s : fields){
+        	s = s.replace("\"", "");
+        	hashSet.add(s);
+        }
+		return hashSet;	
+	}
+	
+	
+	/**
+	 * Returns a string of all annotated fields. The fields are separated by the separator defined in this class.
+	 * @return
+	 */
+	//there is likely to be a better (less elaborate) way to get this information, but I didn't manage to find it.
+	private String getFieldsAsString()  {
+		
+	    T defaultBean = null;
+	    
+		try {
+			//initialize bean with default values (by invoking parameterless constructor)
+			defaultBean = clazz.getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+
+	    
+	    try (Writer writer  = new StringWriter()) {
+	    	
+	    	//map bean object to csv string
+	        StatefulBeanToCsv<T> sbc = new StatefulBeanToCsvBuilder<T>(writer)
+	          .withQuotechar('\"')
+	          .withSeparator(separator)
+	          .build();
+
+			 sbc.write(defaultBean);
+			
+		    Scanner scanner = new Scanner(writer.toString());
+		    return scanner.nextLine();
+
+	    } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    return "";    
+	}
+	
 	//TO DO: Log to logger
 	private void logCapturedExceptions(CsvToBean<T> beans, Path filePath) {
 		System.out.println("Captured Exceptions for " + filePath.toString() + ":" );
@@ -93,5 +204,7 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		 	//TO DO: add to logger
 		});
 	}
+	
+	
 
 }

@@ -20,11 +20,10 @@ public interface FileToObjectMapper <T>{
 	 * @param filePath path to the file that will be mapped
 	 * @return List of mapped objects
 	 * @throws FileNotFoundException if file could not be found
-	 * @throws IllegalArgumentException if illegal argument was passed (e.g. null)
 	 * @throws InvalidFileFormatException if the provided file does not have the correct format
 	 */
 	
-	public List<T> mapFileToObjectList(Path filePath) throws FileNotFoundException, IllegalArgumentException, InvalidFileFormatException;
+	public List<T> mapFileToObjectList(Path filePath) throws FileNotFoundException, InvalidFileFormatException;
 
 
 }
