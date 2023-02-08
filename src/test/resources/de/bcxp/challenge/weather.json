@@ -1,0 +1,23 @@
+[
+  {
+    "Month": "January",
+    "Day": 1,
+    "Temp": 59.1
+  },
+   {
+    "Month": "February",
+    "Day": 2,
+    "Temp": 63.5
+  },
+   {
+    "Month": "January",
+    "Day": 3,
+    "Temp": 55.0
+  },
+   {
+    "Month": "January",
+    "Day": 4,
+    "Temp": 59
+  },
+  
+]
