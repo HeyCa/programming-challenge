@@ -46,7 +46,6 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		separator = ',';
 		this.clazz = clazz;
 		beanFields = retrieveBeanFields();
-		System.out.println(beanFields);
 	}
 	
 	public CsvToObjectMapper(Class<T> clazz, char separator) {
