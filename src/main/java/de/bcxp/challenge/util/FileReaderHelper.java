@@ -26,7 +26,7 @@ public class FileReaderHelper {
 	            result = reader.readLine();
 	    } catch (IOException e) {
 	    	if(e instanceof FileNotFoundException || e instanceof NoSuchFileException) {
-	    		throw new FileNotFoundException("The file could not be found");
+	    		throw new FileNotFoundException("The file could not be found: " + filePath.toString());
 	    	} 
 			e.printStackTrace();
 		}

@@ -91,7 +91,7 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		}
 		
 		if(!FileTypeChecker.isCsvFile(filePath)) {
-			throw new InvalidFileFormatException("The file must be a .csv file.");
+			throw new InvalidFileFormatException("File " + filePath.toString() + " is invalid. The file must be a .csv file.");
 		}
 		
 		if(!headerIsValid(filePath)) {
