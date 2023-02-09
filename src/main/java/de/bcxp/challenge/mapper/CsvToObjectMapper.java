@@ -21,26 +21,37 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
+import de.bcxp.challenge.util.FileReaderHelper;
 import de.bcxp.challenge.util.FileTypeChecker;
 import de.bcxp.challengeExceptions.InvalidFileFormatException;
 
+/**
+ * This class is responsible for mapping a csv file to an object list.
+ * @author catherine heyart
+ *
+ * @param <T> Class of the object that the csv file will be mapped to. 
+ * The class needs to follow JavaBeans conventions and the fields that should be mapped need to be marked with an OpenCSV annotation.
+ */
 public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	
 	/**
-	 * Class of Type T
+	 * Class of Type T.
 	 */
 	private Class<T> clazz;
 	
 	/**
-	 * separator that is used in the CSV file. Default is set to ','
+	 * Separator that is used in the CSV file which will be parsed. Default is set to ','
 	 */
 	private char separator;
 	
 	/**
-	 * hashSet containing all the fields of T that will be mapped  
+	 * HashSet containing all the fields of T that will be mapped.  
 	 */
 	private HashSet<String> beanFields;
 	
+	/**
+	 * Name of this class.
+	 */
 	private final String THIS_CLASS_NAME =  this.getClass().getName();
 	
 	
@@ -66,8 +77,10 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 
 	
 	/**
-	 * Maps Csv File to object list. Only maps a file if the header is valid. The header is considered valid if at least one of its columns corresponds to a field of T.
-	 * Rows that are not valid get skipped and thus not mapped. A row is not valid if its number of columns don't correspond with the number of columns in the header, or if a value does not match the value type of the corresponding field in T. 
+	 * Maps Csv File to object list. Only maps a file if the file extension is .csv and if the header is valid. 
+	 * The header is considered valid if at least one of its columns corresponds to an annotated field of T.
+	 * Rows that are not valid get skipped and thus not mapped. A row is not valid if its number of columns doesn't
+	 * correspond with the number of columns in the header, or if a value does not match the value type of the corresponding field in T. 
 	 * If none of the rows are valid, an empty list will be returned. 
 	 */
 	@Override
@@ -78,13 +91,13 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		}
 		
 		if(!FileTypeChecker.isCsvFile(filePath)) {
-			throw new InvalidFileFormatException("The file must be a .csv file");
+			throw new InvalidFileFormatException("The file must be a .csv file.");
 		}
 		
 		if(!headerIsValid(filePath)) {
 			throw new InvalidFileFormatException("The header is not valid. \n"
-					+ "The header needs to have at least one column which matches a field of the bean to be mapped. \n"
-					+ "It also needs to contain the same separator as the one defined in the class " + THIS_CLASS_NAME);
+					+ "The header needs to have at least one column which matches an annotated field of the bean to be mapped. \n"
+					+ "It also needs to contain the same separator as the one defined in " + THIS_CLASS_NAME);
 		}
 		
 		List<T> list = null; 
@@ -92,7 +105,7 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 			CsvToBean<T> beans = new CsvToBeanBuilder<T>(new FileReader(filePath.toString()))
 					 .withType(clazz)
 		             .withSeparator(separator)
-		            // .withVerifier(this)
+		            // .withVerifier(BeanVerifier)  -> could be used to filter out beans that have invalid values
 		             .withIgnoreEmptyLine(true)
 		             .withThrowExceptions(false)
 					 .build();
@@ -102,9 +115,7 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 			if(!beans.getCapturedExceptions().isEmpty()) {
 				logCapturedExceptions(beans, filePath); 
 			}
-			
 		} catch (IllegalStateException e) {
-			//TO DO: add to logger 
 			e.printStackTrace();
 		}
 		return list;
@@ -114,8 +125,16 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	
 	///////////HELPER METHODS//////////////////////////////////////////////////
 	
+	/**
+	 * This method checks if the first line in a given file is a valid csv header. 	 
+	 * The header is considered valid if 1) at least one of its columns corresponds to an annotated field of T,
+	 * and 2) the separator used in the header is the same separator that is defined in this class. 
+	 * @param filePath path to the file which contains the header
+	 * @return true, if the header is considered valid (matches the above mentioned criteria)
+	 * @throws FileNotFoundException if the file could not be found
+	 */
 	private boolean headerIsValid(Path filePath) throws FileNotFoundException{
-		String header = readFirstLineOfFile(filePath);
+		String header = FileReaderHelper.readFirstLineOfFile(filePath);
 		
 		if(header == null || header.isBlank()) {
 			return false;
@@ -131,23 +150,11 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 		return false;
 	}
 	
-	//TO DO: outsource to util class (?)
-	private String readFirstLineOfFile(Path filePath) throws FileNotFoundException {
-		String result = null;
-	    try (BufferedReader reader = Files.newBufferedReader(filePath)) {
-	            result = reader.readLine();
-	    } catch (IOException e) {
-	    	if(e instanceof FileNotFoundException || e instanceof NoSuchFileException) {
-	    		throw new FileNotFoundException("The file could not be found");
-	    	} 
-			e.printStackTrace();
-		}
-	    return result;	
-	}
+	
 	
 	/**
-	 * 
-	 * @return Hashset containing all the bean fields that will be mapped 
+	 * This method detects all the annotated fields of T and returns in a HashSet in form of strings.
+	 * @return Hashset containing all the bean fields that will be mapped.
 	 */
 	private HashSet<String> retrieveBeanFields(){
 		String fieldString = getFieldsAsString();
@@ -163,8 +170,9 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 	
 	
 	/**
-	 * Returns a string of all annotated fields. The fields are separated by the separator defined in this class.
-	 * @return
+	 * Helper method which detects all the annotated fields of T and returns them as a single String. 
+	 * The fields are separated by the separator defined in this class.
+	 * @return String containint all the bean fields that will be mapped
 	 */
 	//there is likely to be a better (less elaborate) way to get this information, but I didn't manage to find it.
 	private String getFieldsAsString()  {
@@ -178,35 +186,39 @@ public class CsvToObjectMapper <T> implements FileToObjectMapper <T>{
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
-
 	    
 	    try (Writer writer  = new StringWriter()) {
 	    	
-	    	//map bean object to csv string
+	    	//map bean object to Stringwriter -> will contain:
+	    	//1) column/field names in first line
+	    	//2) default values in second line
 	        StatefulBeanToCsv<T> sbc = new StatefulBeanToCsvBuilder<T>(writer)
 	          .withQuotechar('\"')
 	          .withSeparator(separator)
 	          .build();
-
 			 sbc.write(defaultBean);
 			
+			 //retrieve first line (line containing the column names)
 		    Scanner scanner = new Scanner(writer.toString());
 		    return scanner.nextLine();
 
 	    } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    return "";    
 	}
 	
-	//TO DO: Log to logger
+	/**
+	 * Helper method which logs the exceptions caught while the csv file got mapped to beans.
+	 * @param beans Beans containing the caputred expressions
+	 * @param filePath path of the file which got mapped and which the exceptions refer to
+	 */
+	//TO DO: instead of logging the exceptions to the console, it is better to log them into a file 
 	private void logCapturedExceptions(CsvToBean<T> beans, Path filePath) {
 		System.err.println("Captured Exceptions from " + THIS_CLASS_NAME + " while parsing " + filePath.toString() + ":" );
 		System.err.println("The listed row(s) will not be mapped to objects.");
 		beans.getCapturedExceptions().forEach(e -> {
 			System.err.println(e.getLineNumber() + ":" + e);
-		 	//TO DO: add to logger
 		});
 	}
 	

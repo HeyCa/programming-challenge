@@ -5,7 +5,8 @@ import java.util.Objects;
 import com.opencsv.bean.CsvBindByName;
 
 /**
- * DailyWeather model follows JavaBeans conventions, and defines fields and methods to save daily weather data.
+ * DailyWeather model defines fields and methods to save daily weather data.
+ * This class follows JavaBeans conventions and contains annotations from the OpenCSV library, so that it can be mapped from csv files.
  * @author catherine heyart
  *
  */
@@ -34,6 +35,9 @@ public class DailyWeather {
 	 */
 	private int tempDiffInF;
 	
+	/**
+	 * Default value assigned to all int attributes which cannot hold negative numbers.
+	 */
 	private final static int DEFAULT_VALUE = -1;
 	
 	public DailyWeather() {
@@ -47,7 +51,7 @@ public class DailyWeather {
 		this.dayOfTheMonth = dayOfTheMonth;
 		this.minTempInF = minTemp;
 		this.maxTempInF = maxTemp;
-		calculateTempDiffInF();
+		setTempDiffInF();
 	}
 
 	public int getDayOfTheMonth() {
@@ -64,7 +68,7 @@ public class DailyWeather {
 
 	public void setMinTempInF(int minTempInFahrenheit) {		
 		this.minTempInF = minTempInFahrenheit;
-		calculateTempDiffInF();
+		setTempDiffInF();
 	}
 
 	public int getMaxTempInF() {
@@ -73,15 +77,19 @@ public class DailyWeather {
 
 	public void setMaxTempInF(int maxTempInFahrenheit) {
 		this.maxTempInF = maxTempInFahrenheit;
-		calculateTempDiffInF();
+		setTempDiffInF();
 	}
 	
 	public int getTempDiffInF() {
 		return tempDiffInF;
 	}
 
-	private void calculateTempDiffInF() {
-		if(minTempInF == DEFAULT_VALUE || maxTempInF == DEFAULT_VALUE) {
+	/**
+	 * This methods calculates and sets the temperature difference, based on the minimum and maximum temperature. 
+	 * Sets the the tempDifference to the default value if minTemp or maxTemp don't have valid values.
+	 */
+	private void setTempDiffInF() {
+		if(minTempInF == DEFAULT_VALUE || maxTempInF == DEFAULT_VALUE || maxTempInF < minTempInF) {
 			tempDiffInF = DEFAULT_VALUE;
 			return;
 		} 
@@ -115,8 +123,4 @@ public class DailyWeather {
 				&& tempDiffInF == other.tempDiffInF;
 	}
 	
-	
-	
-	
-
 }

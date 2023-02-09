@@ -41,12 +41,14 @@
             <version>5.8.0-M1</version>
             <scope>test</scope>
         </dependency>
+        <!--Mockito is used to mock the repository when testing the Service classes-->
         <dependency>
 		    <groupId>org.mockito</groupId>
 		    <artifactId>mockito-core</artifactId>
 		    <version>4.11.0</version>
 		    <scope>test</scope>
 		</dependency>
+		<!--OpenCSV is used to parse the CSV file and map it to the models (beans)-->
           <dependency>
 		    <groupId>com.opencsv</groupId>
 		    <artifactId>opencsv</artifactId>

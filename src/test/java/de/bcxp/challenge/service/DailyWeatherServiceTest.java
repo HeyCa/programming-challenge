@@ -13,6 +13,11 @@ import de.bcxp.challenge.mapper.CsvToObjectMapper;
 import de.bcxp.challenge.model.DailyWeather;
 import de.bcxp.challenge.repository.Repository;
 
+/**
+ * Test class for DailyWeatherService
+ * @author catherine heyart
+ *
+ */
 class DailyWeatherServiceTest {
 		
 	private Repository<DailyWeather> mockRepo;
@@ -37,7 +42,7 @@ class DailyWeatherServiceTest {
 	}
 	
 	@Test
-	//full repository with valied tempDiff
+	//full repository with valid tempDiff
 	void normalCase() {
 		Mockito.when(mockRepo.getData()).thenReturn(data);
 		int result = weatherService.getDayWithSmallestTempSpread();
@@ -52,6 +57,7 @@ class DailyWeatherServiceTest {
 	}
 	
 	@Test
+	//one entry on repository contains invalid tempDifference (value -1) which gets filtered out
 	void nonValiedEntryPresent() {
 		data.add(new DailyWeather(6, 59, -1));
 		Mockito.when(mockRepo.getData()).thenReturn(data);
@@ -60,6 +66,7 @@ class DailyWeatherServiceTest {
 	}
 	
 	@Test
+	//all entries contain invalid tempDifference -> empty array is returned because all entries get filtered out
 	void onlyNonValiedEntries() {
 		List <DailyWeather> nonValiedData = new ArrayList<>();
 		nonValiedData.add(new DailyWeather(1, -1, 88));
@@ -74,7 +81,7 @@ class DailyWeatherServiceTest {
 	}
 	
 	@Test
-	void doubleValues() {
+	void lowestTempDifferenceValueIsPresentTwice() {
 		data.add(new DailyWeather(6, 63, 79));
 		Mockito.when(mockRepo.getData()).thenReturn(data);
 		int result = weatherService.getDayWithSmallestTempSpread();

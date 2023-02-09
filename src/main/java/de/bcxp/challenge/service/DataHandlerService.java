@@ -13,7 +13,7 @@ import de.bcxp.challenge.repository.Repository;
 import de.bcxp.challengeExceptions.InvalidFileFormatException;
 
 /**
- * Class contains a repository and handles data. Contains methods to retrieve data meeting certain criteria. 
+ * This class has access to a repository of type T and provides methods to input and retrieve data. 
  * @author catherine heyart
  *
  */
@@ -24,6 +24,9 @@ public abstract class DataHandlerService <T>{
 	 */
 	protected Repository<T> repo;
 	
+	/**
+	 * Mapper which maps csv files to objects of type T
+	 */
 	protected CsvToObjectMapper<T> csvMapper;
 	
 	public DataHandlerService(Repository<T> repository, CsvToObjectMapper<T> csvMapper) {
@@ -40,8 +43,11 @@ public abstract class DataHandlerService <T>{
 	/**
 	 * Adds data to the repository from a Csv file. Rows that are not formatted correctly or have the wrong value type get skipped. 
 	 * @param filePath path of .csv file which contains the data
-	 * @throws InvalidFileFormatException 
-	 * @throws FileNotFoundException 
+	 * @param separator Separator used in the csv file
+	 * @throws InvalidFileFormatException if the file does not have a .csv extension or if the header is invalid. 
+	 * The header is considered invalid if 1) none of its columns correspond to a field of the Object T, or 
+	 * 2) the separator in the header does not correspond to the separator provided as a parameter in this method.
+	 * @throws FileNotFoundException if the file could not be found
 	 */
 	public void addDataFromCsvFile(Path filePath, char separator) throws FileNotFoundException, InvalidFileFormatException {
 		csvMapper.setSeparator(separator);
@@ -49,7 +55,7 @@ public abstract class DataHandlerService <T>{
 	}
 	
 	/**
-	 * Prints the data which is currenlty present in the repository
+	 * Prints the data which is currently present in the repository
 	 */
 	public void printData() {
 		if(repo.isEmpty()) {
@@ -61,42 +67,30 @@ public abstract class DataHandlerService <T>{
 	}
 	
 	/**
-	 * Retrieves the object that has the lowest value according to the comparator. The Entries matching the conditions defined by the filter will be filtered out. 
-	 * The filter can for example be used to filter out default values.
+	 * Retrieves the object that has the lowest value according to the comparator. The entries NOT matching the conditions defined by the filter will be filtered out. 
+	 * (The filter can for example be used to filter out default values.)
 	 * @param comparator defines the values which will be compared (cannot be null)
-	 * @param filter defines to condition by which entries will be filtered out (can be null)
+	 * @param filter defines the condition by which entries will be filtered (can be null)
 	 * @return the object with the lowest value. Null if no such object exists (if the repository is empty or if all objects have been filtered out)
 	 */
 	protected T getObjectByLowestValue(Comparator<T> comparator, Predicate<T> filter) {
-		if(comparator == null) {
-			throw new IllegalArgumentException("Comparator cannot be null.");
-		}
-		
 		if(repo.isEmpty()) {
 			return null;
 		}
 				
 		List<T> sortedList = sortAndFilterData(comparator, filter);
 		
-		//System.out.println("Sorted List: ");
-		//sortedList.stream().forEach(d -> System.out.println(d));
-		
-		
 		return sortedList.isEmpty() ? null : sortedList.get(0);
 	}
 	
 	/**
-	 * Retrieves the object that has the highest value according to the comparator. The Entries matching the conditions defined by the filter will be filtered out. 
+	 * Retrieves the object that has the highest value according to the comparator. The Entries NOT matching the conditions defined by the filter will be filtered out. 
 	 * The filter can for example be used to filter out default values.
 	 * @param comparator defines the values which will be compared (cannot be null)
-	 * @param filter defines to condition by which entries will be filtered out (can be null)
+	 * @param filter defines to condition by which entries will be filtered (can be null)
 	 * @return the object with the highest value. Null if no such object exists (if the repository is empty or if all objects have been filtered out)
 	 */
 	protected T getObjectByHighestValue(Comparator<T> comparator, Predicate<T> filter) {
-		if(comparator == null) {
-			throw new IllegalArgumentException("Comparator cannot be null.");
-		}
-		
 		if(repo.isEmpty()) {
 			return null;
 		}
@@ -104,16 +98,22 @@ public abstract class DataHandlerService <T>{
 		List<T> sortedList = sortAndFilterData(comparator, filter);
 		int size = sortedList.size();
 		
-		System.out.println("Sorted List: ");
-		sortedList.stream().forEach(d -> System.out.println(d));
-		
-		
 		return sortedList.isEmpty() ? null : sortedList.get(size-1);
 	}
 	
+	/**
+	 * Helper method which sorts and filters data and returns the results as a list
+	 * @param comparator defines the values by which the list will be sorted by (cannot be null)
+	 * @param filter defines the condition by which the data will be filtered by (all entries NOT meeting the condition will be filtered out)
+	 * @return list of sorted and filtered data
+	 */
 	private List<T> sortAndFilterData(Comparator<T> comparator, Predicate<T> filter){
+		if(comparator == null) {
+			throw new IllegalArgumentException("Comparator cannot be null.");
+		}
+		
 		if(filter == null) {
-			filter = (x) -> (true);
+			filter = (x) -> (true);  //condition is always met -> no entries will be filtered out
 		}
 		
 		return repo.getData().stream()

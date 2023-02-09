@@ -11,7 +11,7 @@ import de.bcxp.challengeExceptions.InvalidFileFormatException;
  * Defines a class that maps a file to an object or object list. 
  * @author catherine heyart
  *
- * @param <T> Object(s) that a file will be mapped to. Class T might need to follow specific conventions, so that the mapping can be successful. 
+ * @param <T> Object(s) that a file will be mapped to.  
  */
 public interface FileToObjectMapper <T>{
 	

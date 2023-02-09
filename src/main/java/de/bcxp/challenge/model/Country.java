@@ -6,6 +6,7 @@ import com.opencsv.bean.CsvBindByName;
 
 /**
  * Model class which holds information of a specific country
+ * This class follows JavaBeans conventions and contains annotations from the OpenCSV library, so that it can be mapped from csv files.
  * @author catherine heyart
  *
  */
@@ -34,13 +35,17 @@ public class Country {
 	 */
 	private int populationDensity;
 	
+
+	/**
+	 * Default value assigned to all int attributes which cannot hold negative numbers.
+	 */
 	private static final int DEFAULT_VALUE = -1;
 
 	public Country(String name, int population, int area) {
 		this.name = name;
 		this.population = population;
 		this.area = area;
-		calculatePopulationDensity();
+		setPopulationDensity();
 	}
 
 	public Country() {
@@ -65,7 +70,7 @@ public class Country {
 
 	public void setPopulation(int population) {
 		this.population = population;
-		calculatePopulationDensity();
+		setPopulationDensity();
 	}
 
 	public int getArea() {
@@ -74,7 +79,7 @@ public class Country {
 
 	public void setArea(int area) {
 		this.area = area;
-		calculatePopulationDensity();
+		setPopulationDensity();
 	}
 
 	public int getPopulationDensity() {
@@ -82,7 +87,11 @@ public class Country {
 	}
 
 
-	private void calculatePopulationDensity() {
+	/**
+	 * This methods calculates and sets the population density, based on the population and area. 
+	 * Sets the the population density to the default value if population or area don't have valid values.
+	 */
+	private void setPopulationDensity() {
 		if(population == DEFAULT_VALUE || area == DEFAULT_VALUE || area == 0) {
 			populationDensity = DEFAULT_VALUE;
 			return;

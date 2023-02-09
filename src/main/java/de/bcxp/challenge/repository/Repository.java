@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Repository of a certain data type. Contains methods to manage data input into the repository.
+ * Repository for objects of type T. Contains methods to manage data input and retrieval.
  * @author catherine heyart
  *
  * @param <T> object type saved in the repository
@@ -21,8 +21,8 @@ public class Repository <T>{
 	}
 	
 	/**
-	 * Adds new data to the repository. The data gets appended to the already existing data
-	 * @param newData
+	 * Adds new data to the repository. The data gets appended to the already existing data.
+	 * @param newData Data to be added.
 	 */
 	public void addData(List<T> newData) {
 		if(newData == null) {
@@ -34,6 +34,7 @@ public class Repository <T>{
 	public List<T> getData() {
 		return data;
 	}
+	
 	/**
 	 * Checks if the repository is empty.
 	 * @return true, if the repository is empty
